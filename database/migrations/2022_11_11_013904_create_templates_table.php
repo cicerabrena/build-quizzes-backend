@@ -18,7 +18,6 @@ return new class extends Migration
             $table->uuid('identification')->unique();
             $table->foreignId('subject_id')->constrained('subjects')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('question_id')->constrained('questions')->cascadeOnDelete();
             $table->string('name', 30)->unique();
             $table->string('description', 30)->nullable();
             $table->softDeletes();

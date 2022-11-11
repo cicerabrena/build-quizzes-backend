@@ -45,7 +45,17 @@ class User extends Authenticatable
 
     public function subjects()
     {
-        $this->hasMany(Subject::class);
+        return $this->hasMany(Subject::class);
+    }
+
+    public function quizzes()
+    {
+        return $this->hasMany(Quiz::class);
+    }
+    
+    public function templates()
+    {
+        return $this->hasMany(Template::class);
     }
     
 }

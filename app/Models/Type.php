@@ -18,4 +18,9 @@ class Type extends Model
         return $this->hasMany(Subquestion::class);
     }
 
+    public function quizzes()
+    {
+        return $this->hasMany(Quiz::class);
+    }
+
 }

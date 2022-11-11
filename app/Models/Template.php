@@ -8,4 +8,18 @@ use Illuminate\Database\Eloquent\Model;
 class Template extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['user_id', 'subject_id', 'question_id', 'name', 'description'];
+
+    protected $hidden = ['id', 'deleted_at'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }
 }
