@@ -4,21 +4,40 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Type extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
-    protected $fillable = ['name', 'identification'];
+    protected $fillable = [
+        'identification',
+        'name',
+    ];
 
-    protected $hidden = ['id', 'deleted_at'];
+    protected $hidden = [
+        'id',
+        'deleted_at'
+    ];
 
-    public function subquestions()
+    /**
+     * Define relation with Subquestion table
+     *
+     * @return HasMany<Subquestion>
+     */
+    public function subquestions(): HasMany
     {
         return $this->hasMany(Subquestion::class);
     }
 
-    public function quizzes()
+    /**
+     * Define relation with Quiz table
+     *
+     * @return HasMany<Quiz>
+     */
+    public function quizzes(): HasMany
     {
         return $this->hasMany(Quiz::class);
     }

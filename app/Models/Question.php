@@ -4,26 +4,54 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Question extends Model
 {
     use HasFactory;
+    use SoftDeletes;
     
-    protected $fillable = ['type_id', 'subquestion_id', 'alternative_id', 'name'];
+    protected $fillable = [
+        'identification',
+        'type_id',
+        'subquestion_id',
+        'alternative_id',
+        'name'
+    ];
 
-    protected $hidden = ['id', 'deleted_at'];
+    protected $hidden = [
+        'id',
+        'deleted_at'
+    ];
 
-    public function type()
+    /**
+     * Define relation with Type table
+     *
+     * @return BelongsTo<Type, Question>
+     */
+    public function type(): BelongsTo
     {
         return $this->belongsTo(Type::class);
     }
 
-    public function subquestion()
+    /**
+     * Define relation with Subquestion table
+     *
+     * @return HasOne<Subquestion>
+     */
+    public function subquestion(): HasOne
     {
         return $this->hasOne(Subquestion::class);
     }
 
-    public function alternative()
+    /**
+     * Define relation with Alternative table
+     *
+     * @return HasOne<Alternative>
+     */
+    public function alternative(): HasOne
     {
         return $this->hasOne(Alternative::class);
     }

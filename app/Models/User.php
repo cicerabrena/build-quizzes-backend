@@ -4,13 +4,16 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -18,6 +21,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'identification',
         'name',
         'email',
         'password',
@@ -43,17 +47,32 @@ class User extends Authenticatable
     ];
 
 
-    public function subjects()
+    /**
+     * Define relation with Subject table
+     *
+     * @return HasMany<Subject>
+     */
+    public function subjects(): HasMany
     {
         return $this->hasMany(Subject::class);
     }
 
-    public function quizzes()
+    /**
+     * Define relation with Quiz table
+     *
+     * @return HasMany<Quiz>
+     */
+    public function quizzes(): HasMany
     {
         return $this->hasMany(Quiz::class);
     }
     
-    public function templates()
+    /**
+     * Define relation with Template table
+     *
+     * @return HasMany<Template>
+     */
+    public function templates(): HasMany
     {
         return $this->hasMany(Template::class);
     }
