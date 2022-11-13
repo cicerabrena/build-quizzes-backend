@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\Types\IndexController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,7 +16,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('types')->as('types.')->group(function() {
-        Route::get('/', IndexController::class)->name('index');
+        Route::get('/', \App\Http\Controllers\Api\Types\IndexController::class)->name('index');
+        Route::post('/store', App\Http\Controllers\Api\Types\StoreController::class)->name('store');
     });
 });
 
