@@ -10,3 +10,6 @@ parameters:
     level: 9
 
     checkMissingIterableValueType: true
+
+    universalObjectCratesClasses:
+        - Illuminate\Http\Resources\Json\JsonResource
