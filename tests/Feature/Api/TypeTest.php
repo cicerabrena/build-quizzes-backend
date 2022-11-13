@@ -14,9 +14,22 @@ class TypeTest extends TestCase
 
     private const TABLE_NAME = 'types';
 
-    public function testCannotAccessIndexRouteUnauthorized(): void
+    /**
+     * @dataProvider Tests\Datasets\MockTypeStrings::getRoutes
+     * @param array<mixed> $parameters
+     */
+    public function testCannotAccessProtectedGetRoutesUnauthorized(array ...$parameters): void
     {
-        $response = $this->getJson(route(name: 'api.types.index'));
+        $response = $this->getJson(route(...$parameters));
+        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
+    }
+
+    /**
+     * @dataProvider Tests\Datasets\MockTypeStrings::postRoutes
+     */
+    public function testCannotAccessProtectedPostRoutesUnauthorized(string $route): void
+    {
+        $response = $this->postJson(route(name: $route));
         $response->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 
@@ -41,7 +54,7 @@ class TypeTest extends TestCase
     }
 
     /**
-     * @dataProvider nameOfTypes
+     * @dataProvider Tests\Datasets\MockTypeStrings::nameOfTypes
      */
     public function testCanUserCreateAType(string $name): void
     {
@@ -52,20 +65,38 @@ class TypeTest extends TestCase
 
         $response = $this->postJson(route(name: 'api.types.store'), data: $data);
 
+        $jsonResponse = json_decode($response->content(), true);
+
         $response->assertStatus(Response::HTTP_CREATED);
 
         self::assertDatabaseCount(self::TABLE_NAME, 1);
         self::assertDatabaseHas(self::TABLE_NAME, $data);
+        self::assertSame($name, data_get($jsonResponse, 'attributes.name'));
     }
 
-    /**
-     * @return array<int, array<int, string>>
-     */
-    public function nameOfTypes(): array
+    public function testCanRetrieveTypeByUuid(): void
     {
-        return [
-            ['radio'],
-            ['checkbox']
-        ];
+        $userId = User::factory()->create()->id;
+        auth()->loginUsingId($userId);
+
+        $type = Type::factory()->create(['user_id' => $userId]);
+
+        $response = $this->getJson(route(name: 'api.types.show', parameters: $type->identification));
+
+        $jsonResponse = json_decode($response->content(), true);
+
+        $response->assertStatus(Response::HTTP_OK);
+        self::assertSame($type->name, data_get($jsonResponse, 'name'));
     }
+
+    public function testCannotRetrieveTypeWithInvalidUuid(): void
+    {
+        $userId = User::factory()->create()->id;
+        auth()->loginUsingId($userId);
+
+        $response = $this->getJson(route(name: 'api.types.show', parameters: 'invalid-uuid'));
+
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+    }
+
 }

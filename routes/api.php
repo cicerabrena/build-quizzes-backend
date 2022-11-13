@@ -18,6 +18,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('types')->as('types.')->group(function() {
         Route::get('/', \App\Http\Controllers\Api\Types\IndexController::class)->name('index');
         Route::post('/store', App\Http\Controllers\Api\Types\StoreController::class)->name('store');
+        Route::get('{uuid}', App\Http\Controllers\Api\Types\ShowController::class)->name('show');
     });
 });
 
