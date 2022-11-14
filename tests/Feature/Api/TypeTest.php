@@ -15,10 +15,10 @@ class TypeTest extends TestCase
     private const TABLE_NAME = 'types';
 
     /**
+     * @param string $parameters
      * @dataProvider Tests\Datasets\MockTypeStrings::getRoutes
-     * @param array<mixed> $parameters
      */
-    public function testCannotAccessProtectedGetRoutesUnauthorized(array ...$parameters): void
+    public function testCannotAccessProtectedGetRoutesUnauthorized(string ...$parameters): void
     {
         $response = $this->getJson(route(...$parameters));
         $response->assertStatus(Response::HTTP_UNAUTHORIZED);
@@ -30,6 +30,16 @@ class TypeTest extends TestCase
     public function testCannotAccessProtectedPostRoutesUnauthorized(string $route): void
     {
         $response = $this->postJson(route(name: $route));
+        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
+    }
+
+    /**
+     * @param string $parameters
+     * @dataProvider Tests\Datasets\MockTypeStrings::putRoutes
+     */
+    public function testCannotAccessProtectedPutRoutesUnauthorized(string ...$parameters): void
+    {
+        $response = $this->putJson(route(...$parameters));
         $response->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 
@@ -97,6 +107,51 @@ class TypeTest extends TestCase
         $response = $this->getJson(route(name: 'api.types.show', parameters: 'invalid-uuid'));
 
         $response->assertStatus(Response::HTTP_NOT_FOUND);
+    }
+
+    public function testCanUpdateANameOfAType(): void
+    {
+        $userId = User::factory()->create()->id;
+        auth()->loginUsingId($userId);
+
+        $type = Type::factory()->create(['user_id' => $userId]);
+
+        $newName = 'radio';
+
+        $response = $this->putJson(route(name: 'api.types.update', parameters: $type->identification), data: ['name' => $newName]);
+
+        $jsonResponse = json_decode($response->content(), true);
+
+        $response->assertStatus(Response::HTTP_OK);
+        self::assertEquals($newName, data_get($jsonResponse, 'attributes.name'));
+    }
+
+    public function testCannotUpdateATypeNameWithInvalidUuid(): void
+    {
+        $userId = User::factory()->create()->id;
+        auth()->loginUsingId($userId);
+
+        $response = $this->putJson(route(name: 'api.types.update', parameters: 'invalid-uuid'), data: ['name' => 'new-invalid-name']);
+
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
+    }
+
+    public function testCannotUpdateATypeNameThatAlreadyExists(): void
+    {
+        $userId = User::factory()->create()->id;
+        auth()->loginUsingId($userId);
+
+        $name = 'checkbox';
+
+        $type = Type::factory()->create(['name' => 'radio', 'user_id' => $userId]);
+        Type::factory()->create(['name' => $name, 'user_id' => $userId]);
+
+        $response = $this->putJson(route(name: 'api.types.update', parameters: $type->identification), ['name' => $name]);
+
+        $jsonResponse = json_decode($response->content(), true);
+
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+        self::assertSame("The new name '{$name}' is already taken", data_get($jsonResponse, 'message'));
     }
 
 }

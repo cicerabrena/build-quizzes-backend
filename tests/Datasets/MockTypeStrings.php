@@ -31,6 +31,16 @@ final class MockTypeStrings extends TestCase
     /**
      * @return array<int, array<int, string>>
      */
+    public static function putRoutes(): array
+    {
+        return [
+            ['api.types.update', 'invalid-uuid']
+        ];
+    }
+
+    /**
+     * @return array<int, array<int, string>>
+     */
     public static function nameOfTypes(): array
     {
         return [
