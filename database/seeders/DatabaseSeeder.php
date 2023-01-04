@@ -2,9 +2,6 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
-use App\Models\{Subject, Template, User};
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,9 +11,13 @@ class DatabaseSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
-        User::factory(10)->create();
-        Subject::factory(5)->has(User::factory(1))->create();
+        if (app()->environment(['local'])) {
+            $this->call([
+                UserSeeder::class,
+                TypeSeeder::class
+            ]);
+        }
     }
 }

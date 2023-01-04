@@ -14,6 +14,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('types')->as('types.')->group(function() {
+        Route::get('/', \App\Http\Controllers\Api\Types\IndexController::class)->name('index');
+        Route::post('/store', App\Http\Controllers\Api\Types\StoreController::class)->name('store');
+        Route::get('{uuid}', App\Http\Controllers\Api\Types\ShowController::class)->name('show');
+        Route::put('{uuid}', App\Http\Controllers\Api\Types\UpdateController::class)->name('update');
+        Route::delete('{uuid}', App\Http\Controllers\Api\Types\DestroyController::class)->name('destroy');
+    });
+});
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
