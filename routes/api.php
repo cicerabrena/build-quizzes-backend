@@ -14,7 +14,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::post('/register', \App\Http\Controllers\Api\RegisterController::class)->name('register');
+
+Route::post('/login', \App\Http\Controllers\Api\LoginController::class)->name('login');
+
+
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::prefix('auth')->as('auth.')->group(function() {
+        Route::post('/revoke/{uuid}', App\Http\Controllers\Api\Auth\RevokeController::class)->name('revoke');
+    });
+
     Route::prefix('types')->as('types.')->group(function() {
         Route::get('/', \App\Http\Controllers\Api\Types\IndexController::class)->name('index');
         Route::post('/store', App\Http\Controllers\Api\Types\StoreController::class)->name('store');
