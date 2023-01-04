@@ -7,40 +7,35 @@ use Tests\TestCase;
 final class MockTypeStrings extends TestCase
 {
 
-    /**
-     * @return array<int, array<int, string>>
-     */
-    public static function getRoutes(): array
+    public static function routes(): array
     {
         return [
-            ['api.types.index'],
-            ['api.types.show', 'invalid-uuid']
+            [
+                'method' => 'GET',
+                'uri' => 'api.types.index'
+            ],
+            [
+                'method' => 'GET',
+                'uri' => 'api.types.show',
+                'parameters' => ['invalid-uuid']
+            ],
+            [
+                'method' => 'POST',
+                'uri' => 'api.types.store',
+            ],
+            [
+                'method' => 'PUT',
+                'uri' => 'api.types.update',
+                'parameters' => ['invalid-uuid']
+            ],
+            [
+                'method' => 'DELETE',
+                'uri' => 'api.types.destroy',
+                'parameters' => ['invalid-uuid']
+            ],
         ];
     }
 
-    /**
-     * @return array<int, array<int, string>>
-     */
-    public static function postRoutes(): array
-    {
-        return [
-            ['api.types.store']
-        ];
-    }
-
-    /**
-     * @return array<int, array<int, string>>
-     */
-    public static function putRoutes(): array
-    {
-        return [
-            ['api.types.update', 'invalid-uuid']
-        ];
-    }
-
-    /**
-     * @return array<int, array<int, string>>
-     */
     public static function nameOfTypes(): array
     {
         return [

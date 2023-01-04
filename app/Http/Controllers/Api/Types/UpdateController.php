@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api\Types;
 
 use App\Actions\Types\UpdateType;
-use App\Factories\TypeFactory;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Types\UpdateRequest;
 use App\Http\Resources\Api\TypeResource;
@@ -13,14 +12,7 @@ use Illuminate\Http\Response;
 
 class UpdateController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     *
-     * @param  \App\Http\Requests\Api\Types\UpdateRequest  $request
-     * @param string $uuid
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function __invoke(UpdateRequest $request, string $uuid): JsonResponse
+    public function __invoke(UpdateRequest $request, string $uuid): \Illuminate\Http\JsonResponse
     {
         $type = Type::where('identification', $uuid)->firstOrFail();
 

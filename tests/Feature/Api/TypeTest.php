@@ -15,31 +15,12 @@ class TypeTest extends TestCase
     private const TABLE_NAME = 'types';
 
     /**
-     * @param string $parameters
-     * @dataProvider Tests\Datasets\MockTypeStrings::getRoutes
+     * @dataProvider Tests\Datasets\MockTypeStrings::routes
      */
-    public function testCannotAccessProtectedGetRoutesUnauthorized(string ...$parameters): void
+    public function testCannotAccessProtectedRoutesUnauthorized(string $method, string $uri, array $parameters = []): void
     {
-        $response = $this->getJson(route(...$parameters));
-        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
-    }
+        $response= $this->json($method, route($uri, $parameters));
 
-    /**
-     * @dataProvider Tests\Datasets\MockTypeStrings::postRoutes
-     */
-    public function testCannotAccessProtectedPostRoutesUnauthorized(string $route): void
-    {
-        $response = $this->postJson(route(name: $route));
-        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
-    }
-
-    /**
-     * @param string $parameters
-     * @dataProvider Tests\Datasets\MockTypeStrings::putRoutes
-     */
-    public function testCannotAccessProtectedPutRoutesUnauthorized(string ...$parameters): void
-    {
-        $response = $this->putJson(route(...$parameters));
         $response->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
 
@@ -48,6 +29,7 @@ class TypeTest extends TestCase
         $qtdTypes = 4;
 
         $userId = User::factory()->create()->id;
+
         auth()->loginUsingId($userId);
 
         Type::factory()->count($qtdTypes)->create(['user_id' => $userId]);
@@ -60,7 +42,6 @@ class TypeTest extends TestCase
 
         self::assertIsArray($jsonResponse);
         self::assertCount($qtdTypes, $jsonResponse);
-        self::assertContainsEquals('type', $jsonResponse[0], 'type');
     }
 
     /**
@@ -69,6 +50,7 @@ class TypeTest extends TestCase
     public function testCanUserCreateAType(string $name): void
     {
         $userId = User::factory()->create()->id;
+
         auth()->loginUsingId($userId);
 
         $data = ['name' => $name];
@@ -81,12 +63,32 @@ class TypeTest extends TestCase
 
         self::assertDatabaseCount(self::TABLE_NAME, 1);
         self::assertDatabaseHas(self::TABLE_NAME, $data);
-        self::assertSame($name, data_get($jsonResponse, 'attributes.name'));
+        self::assertSame($name, data_get($jsonResponse, 'name'));
+    }
+
+    public function testUserCannotCreateDuplicateType(): void
+    {
+        $userId = User::factory()->create()->id;
+
+        auth()->loginUsingId($userId);
+
+        $name = 'radio';
+
+        Type::factory()->create(['user_id' => $userId, 'name' => $name]);
+
+        $response = $this->postJson(route(name: 'api.types.store'), data: ['name' => $name]);
+
+        $jsonResponse = json_decode($response->content(), true);
+
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+
+        self::assertSame('The name of the type is already taken', data_get($jsonResponse, 'message'));
     }
 
     public function testCanRetrieveTypeByUuid(): void
     {
         $userId = User::factory()->create()->id;
+
         auth()->loginUsingId($userId);
 
         $type = Type::factory()->create(['user_id' => $userId]);
@@ -96,12 +98,14 @@ class TypeTest extends TestCase
         $jsonResponse = json_decode($response->content(), true);
 
         $response->assertStatus(Response::HTTP_OK);
+
         self::assertSame($type->name, data_get($jsonResponse, 'name'));
     }
 
     public function testCannotRetrieveTypeWithInvalidUuid(): void
     {
         $userId = User::factory()->create()->id;
+
         auth()->loginUsingId($userId);
 
         $response = $this->getJson(route(name: 'api.types.show', parameters: 'invalid-uuid'));
@@ -112,6 +116,7 @@ class TypeTest extends TestCase
     public function testCanUpdateANameOfAType(): void
     {
         $userId = User::factory()->create()->id;
+
         auth()->loginUsingId($userId);
 
         $type = Type::factory()->create(['user_id' => $userId]);
@@ -123,12 +128,14 @@ class TypeTest extends TestCase
         $jsonResponse = json_decode($response->content(), true);
 
         $response->assertStatus(Response::HTTP_OK);
-        self::assertEquals($newName, data_get($jsonResponse, 'attributes.name'));
+
+        self::assertEquals($newName, data_get($jsonResponse, 'name'));
     }
 
     public function testCannotUpdateATypeNameWithInvalidUuid(): void
     {
         $userId = User::factory()->create()->id;
+
         auth()->loginUsingId($userId);
 
         $response = $this->putJson(route(name: 'api.types.update', parameters: 'invalid-uuid'), data: ['name' => 'new-invalid-name']);
@@ -139,11 +146,13 @@ class TypeTest extends TestCase
     public function testCannotUpdateATypeNameThatAlreadyExists(): void
     {
         $userId = User::factory()->create()->id;
+
         auth()->loginUsingId($userId);
 
         $name = 'checkbox';
 
         $type = Type::factory()->create(['name' => 'radio', 'user_id' => $userId]);
+
         Type::factory()->create(['name' => $name, 'user_id' => $userId]);
 
         $response = $this->putJson(route(name: 'api.types.update', parameters: $type->identification), ['name' => $name]);
@@ -151,7 +160,34 @@ class TypeTest extends TestCase
         $jsonResponse = json_decode($response->content(), true);
 
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
+
         self::assertSame("The new name '{$name}' is already taken", data_get($jsonResponse, 'message'));
+    }
+
+    public function testCanSoftDeleteAType(): void
+    {
+        $userId = User::factory()->create()->id;
+
+        auth()->loginUsingId($userId);
+
+        $type = Type::factory()->create(['name' => 'radio', 'user_id' => $userId])->toArray();
+
+        $response = $this->deleteJson(route(name: 'api.types.destroy', parameters:  data_get($type, 'identification')));
+
+        $response->assertStatus(Response::HTTP_OK);
+        self::assertDatabaseHas(self::TABLE_NAME, $type);
+        self::assertSoftDeleted(self::TABLE_NAME, $type);
+    }
+
+    public function testCannotSoftDeleteATypeWithInvalidUuid(): void
+    {
+        $userId = User::factory()->create()->id;
+
+        auth()->loginUsingId($userId);
+
+        $response = $this->deleteJson(route(name: 'api.types.destroy', parameters: 'invalid-uuid'));
+
+        $response->assertStatus(Response::HTTP_NOT_FOUND);
     }
 
 }

@@ -2,29 +2,25 @@
 
 namespace App\Http\Resources\Api;
 
-use Illuminate\Http\Request;
-use TiMacDonald\JsonApi\JsonApiResource;
+use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\Type;
 
-class TypeResource extends JsonApiResource
+class TypeResource extends JsonResource
 {
     /**
-     * @param Request $request
-     * @return string
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array<string, mixed>|\Illuminate\Contracts\Support\Arrayable<string, mixed>|\JsonSerializable
      */
-    protected function toType(Request $request): string
+    public function toArray($request)
     {
-        return 'type';
-    }
+        /** @var Type */
+        $type = $this;
 
-    /**
-     * @param Request $request
-     * @return array<string, mixed>
-     */
-    protected function toAttributes(Request $request): array
-    {
         return [
-            'name' => $this->name
+            'uuid' => $type->identification,
+            'name' => $type->name
         ];
     }
-
 }

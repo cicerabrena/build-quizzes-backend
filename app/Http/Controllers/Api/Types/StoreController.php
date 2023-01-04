@@ -12,11 +12,7 @@ use Illuminate\Http\Response;
 
 class StoreController extends Controller
 {
-    /**
-     * @param  \App\Http\Requests\Api\Types\StoreRequest $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function __invoke(StoreRequest $request): JsonResponse
+    public function __invoke(StoreRequest $request): \Illuminate\Http\JsonResponse
     {
         $type = CreateNewType::handle(TypeFactory::make($request->validated()));
 

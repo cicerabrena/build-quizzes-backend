@@ -20,6 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/store', App\Http\Controllers\Api\Types\StoreController::class)->name('store');
         Route::get('{uuid}', App\Http\Controllers\Api\Types\ShowController::class)->name('show');
         Route::put('{uuid}', App\Http\Controllers\Api\Types\UpdateController::class)->name('update');
+        Route::delete('{uuid}', App\Http\Controllers\Api\Types\DestroyController::class)->name('destroy');
     });
 });
 
