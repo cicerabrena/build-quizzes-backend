@@ -2,6 +2,7 @@
 
 namespace App\Actions\User;
 
+use App\Enums\ValidationError;
 use App\Exceptions\EmailRegisteredException;
 use App\Models\User;
 use Throwable;
@@ -14,7 +15,7 @@ final class UpdateUser
         $email = User::where('email', $attributes['email'])->where('id', '<>', $user->id)->first();
 
         if (isset($email)) {
-            throw new EmailRegisteredException("The e-mail is already registered.");
+            throw new EmailRegisteredException(ValidationError::EMAIL_ALREADY_REGISTERED->value);
         }
 
         $user->update(attributes: $attributes);

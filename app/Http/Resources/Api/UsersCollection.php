@@ -10,26 +10,29 @@ class UsersCollection extends ResourceCollection
      * Transform the resource collection into an array.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     * @return array<string, mixed>|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
     public function toArray($request)
     {
+        /** @var  \Illuminate\Pagination\LengthAwarePaginator */
+        $resource = $this->resource;
+
         return [
             'data' => $this->collection,
             'links' => [
                 'first' => "http://localhost/api/users?page=1",
-                'last' => "http://localhost/api/users?page=" . $this->resource->lastPage(),
-                'prev' => $this->resource->previousPageUrl(),
-                'next' => $this->resource->nextPageUrl()
+                'last' => "http://localhost/api/users?page=" . $resource->lastPage(),
+                'prev' => $resource->previousPageUrl(),
+                'next' => $resource->nextPageUrl()
             ],
             'meta' => [
-                'current_page' => $this->resource->currentPage(),
+                'current_page' => $resource->currentPage(),
                 'from' => '',
                 'to' => '',
-                'total' => $this->resource->total(),
+                'total' => $resource->total(),
                 'path' => '',
-                'last_page' => $this->resource->lastPage() ?? null,
-                'per_page' => $this->resource->perPage(),
+                'last_page' => $resource->lastPage(),
+                'per_page' => $resource->perPage(),
             ]
         ];
     }

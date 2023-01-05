@@ -78,11 +78,8 @@ class TypeTest extends TestCase
 
         $response = $this->postJson(route(name: 'api.types.store'), data: ['name' => $name]);
 
-        $jsonResponse = json_decode($response->content(), true);
-
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-
-        self::assertSame('The name of the type is already taken', data_get($jsonResponse, 'message'));
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+                ->assertSeeText('The name of the type is already taken');
     }
 
     public function testCanRetrieveTypeByUuid(): void
@@ -95,11 +92,8 @@ class TypeTest extends TestCase
 
         $response = $this->getJson(route(name: 'api.types.show', parameters: $type->identification));
 
-        $jsonResponse = json_decode($response->content(), true);
-
-        $response->assertStatus(Response::HTTP_OK);
-
-        self::assertSame($type->name, data_get($jsonResponse, 'name'));
+        $response->assertStatus(Response::HTTP_OK)
+                ->assertSeeText($type->name);
     }
 
     public function testCannotRetrieveTypeWithInvalidUuid(): void
@@ -125,11 +119,8 @@ class TypeTest extends TestCase
 
         $response = $this->putJson(route(name: 'api.types.update', parameters: $type->identification), data: ['name' => $newName]);
 
-        $jsonResponse = json_decode($response->content(), true);
-
-        $response->assertStatus(Response::HTTP_OK);
-
-        self::assertEquals($newName, data_get($jsonResponse, 'name'));
+        $response->assertStatus(Response::HTTP_OK)
+                ->assertSeeText($newName);
     }
 
     public function testCannotUpdateATypeNameWithInvalidUuid(): void
@@ -157,11 +148,8 @@ class TypeTest extends TestCase
 
         $response = $this->putJson(route(name: 'api.types.update', parameters: $type->identification), ['name' => $name]);
 
-        $jsonResponse = json_decode($response->content(), true);
-
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-
-        self::assertSame("The new name '{$name}' is already taken", data_get($jsonResponse, 'message'));
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+                ->assertSeeText(value: "The new name '{$name}' is already taken", escape: false);
     }
 
     public function testCanSoftDeleteAType(): void

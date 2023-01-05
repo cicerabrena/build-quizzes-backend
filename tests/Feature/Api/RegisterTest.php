@@ -3,6 +3,7 @@
 namespace Tests\Feature\Api;
 
 use App\Enums\Constants;
+use App\Enums\ValidationError;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Response;
@@ -35,11 +36,8 @@ class RegisterTest extends TestCase
 
         $response = $this->postJson(route(name: 'api.register'), data: $userData);
 
-        $jsonResponse = (array) json_decode($response->content(), true);
-
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-
-        self::assertSame("The name must have at least " . Constants::MIN_LENGTH_NAME->value . " caracteres.", data_get($jsonResponse, 'message'));
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+                ->assertSeeText("The name must have at least " . Constants::MIN_LENGTH_NAME->value . " caracteres.");
     }
 
     public function testCannotRegisterUserWithInvalidPassword(): void
@@ -48,11 +46,8 @@ class RegisterTest extends TestCase
 
         $response = $this->postJson(route(name: 'api.register'), data: $userData);
 
-        $jsonResponse = (array) json_decode($response->content(), true);
-
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-
-        self::assertSame("The password must have at least ". Constants::MIN_LENGTH_PASSWORD->value ." caracteres.", data_get($jsonResponse, 'message'));
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+                ->assertSeeText("The password must have at least ". Constants::MIN_LENGTH_PASSWORD->value ." caracteres.");
     }
 
     public function testCannotRegisterUserWithEmailRegistered(): void
@@ -63,11 +58,8 @@ class RegisterTest extends TestCase
 
         $response = $this->postJson(route(name: 'api.register'), data: $userData);
 
-        $jsonResponse = (array) json_decode($response->content(), true);
-
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-
-        self::assertSame("The e-mail is already registered.", data_get($jsonResponse, 'message'));
+        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
+                ->assertSeeText(ValidationError::EMAIL_ALREADY_REGISTERED->value);
     }
 
 }

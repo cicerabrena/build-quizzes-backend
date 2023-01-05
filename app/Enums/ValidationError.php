@@ -9,4 +9,5 @@ enum ValidationError: string
     case USER_NOT_REGISTERED = 'The user is not registered.';
     case UUID_NOT_VALID = 'The uuid is not valid.';
     case EMPTY_UUID = 'The uuid is empty.';
+    case EMAIL_ALREADY_REGISTERED  = 'The e-mail is already registered.';
 }

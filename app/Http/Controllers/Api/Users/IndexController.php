@@ -13,10 +13,10 @@ class IndexController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
-        $page = $request->query(key: 'page', default: 1);
-        $limit = $request->query(key: 'limit', default: 15);
+        $page = (int) $request->query(key: 'page', default: '1');
+        $limit = (int) $request->query(key: 'limit', default: '15');
 
-        $skip = (int) $page * $limit;
+        $skip = $page * $limit;
 
         $users = User::skip($skip)->orderBy('name')->paginate($limit);
 

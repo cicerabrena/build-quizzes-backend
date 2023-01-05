@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Api;
 
 use App\Enums\Constants;
+use App\Enums\ValidationError;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RegisterRequest extends FormRequest
@@ -51,7 +52,7 @@ class RegisterRequest extends FormRequest
             'name.min' => "The name must have at least " . Constants::MIN_LENGTH_NAME->value . " caracteres.",
             'email.required' => 'The e-mail is required.',
             'email.email' => 'The e-mail is not valid.',
-            'email.unique' => 'The e-mail is already registered.',
+            'email.unique' => ValidationError::EMAIL_ALREADY_REGISTERED->value,
             'password.required' => 'The password is required.',
             'password.min' => "The password must have at least " . Constants::MIN_LENGTH_PASSWORD->value . " caracteres."
         ];

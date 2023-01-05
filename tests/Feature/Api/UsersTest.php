@@ -152,7 +152,7 @@ class UsersTest extends TestCase
         $response = $this->putJson(uri: route(name: 'api.users.update', parameters: $user->identification), data: $userData);
 
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-                ->assertSeeText("The e-mail is already registered.");
+                ->assertSeeText(ValidationError::EMAIL_ALREADY_REGISTERED->value);
     }
 
     public function testUserCanDeleteAnotherUser(): void

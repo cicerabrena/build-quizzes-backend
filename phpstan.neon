@@ -12,5 +12,7 @@ parameters:
 
     checkMissingIterableValueType: false
 
+    checkGenericClassInNonGenericObjectType: false
+
     universalObjectCratesClasses:
         - Illuminate\Http\Resources\Json\JsonResource
