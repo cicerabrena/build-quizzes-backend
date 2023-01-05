@@ -5,6 +5,9 @@ namespace App\Http\Requests\Api;
 use App\Enums\Constants;
 use App\Enums\ValidationError;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Response;
 
 class RegisterRequest extends FormRequest
 {
@@ -56,5 +59,13 @@ class RegisterRequest extends FormRequest
             'password.required' => 'The password is required.',
             'password.min' => "The password must have at least " . Constants::MIN_LENGTH_PASSWORD->value . " caracteres."
         ];
+    }
+
+    /**
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function failedValidation(Validator $validator): void
+    {
+        throw new ValidationException(validator: $validator, response: response()->json(data: ['errors' => $validator->errors()], status: Response::HTTP_UNPROCESSABLE_ENTITY));
     }
 }

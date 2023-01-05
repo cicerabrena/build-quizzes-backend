@@ -3,7 +3,10 @@
 namespace App\Http\Requests\Api\Auth;
 
 use App\Enums\ValidationError;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 
 class RevokeRequest extends FormRequest
 {
@@ -38,5 +41,13 @@ class RevokeRequest extends FormRequest
             'token.required' => 'The token is required.',
             'token.exists' => ValidationError::TOKEN_INVALID->value
         ];
+    }
+
+    /**
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function failedValidation(Validator $validator): void
+    {
+        throw new ValidationException(validator: $validator, response: response()->json(data: ['errors' => $validator->errors()], status: Response::HTTP_UNPROCESSABLE_ENTITY));
     }
 }

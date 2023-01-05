@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use App\Enums\ValidationError;
 use App\Models\User;
+use App\ValueObjects\ErrorValueObject;
 use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,13 +24,17 @@ class VerifyUserUuid
         $uuid = $request->route('uuid');
 
         if (empty($uuid)) {
-            return new JsonResponse(data: ['message' => ValidationError::EMPTY_UUID->value], status: Response::HTTP_UNPROCESSABLE_ENTITY);
+            $errors = new ErrorValueObject(ValidationError::EMPTY_UUID->value);
+
+            return new JsonResponse(data: $errors->toArray(), status: Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $user = User::where('identification', $uuid)->first();
 
         if (!isset($user)) {
-            return new JsonResponse(data: ['message' => ValidationError::UUID_NOT_VALID->value], status: Response::HTTP_NOT_FOUND);
+            $errors = new ErrorValueObject(ValidationError::UUID_NOT_VALID->value);
+
+            return new JsonResponse(data: $errors->toArray(), status: Response::HTTP_NOT_FOUND);
         }
 
         return $next($request);

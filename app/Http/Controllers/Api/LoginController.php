@@ -7,6 +7,7 @@ use App\Factories\UserFactory;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\LoginRequest;
 use App\Http\Resources\Api\UserResource;
+use App\ValueObjects\ErrorValueObject;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Throwable;
@@ -20,7 +21,9 @@ class LoginController extends Controller
             $user = Login::handle(UserFactory::make($request->validated()));
 
         } catch (Throwable $e) {
-            return new JsonResponse(data: ['message' => $e->getMessage()], status: Response::HTTP_UNPROCESSABLE_ENTITY);
+            $errors = new ErrorValueObject(['password' => $e->getMessage()]);
+
+            return new JsonResponse(data: $errors->toArray(), status: Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         return new JsonResponse(data: new UserResource($user), status: Response::HTTP_OK);
