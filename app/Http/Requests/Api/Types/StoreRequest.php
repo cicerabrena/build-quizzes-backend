@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests\Api\Types;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Response;
+use Illuminate\Validation\ValidationException;
 
 class StoreRequest extends FormRequest
 {
@@ -45,5 +48,13 @@ class StoreRequest extends FormRequest
             'max' => 'The length of the name of the type must have at maximium 30 caracters',
             'unique' => 'The name of the type is already taken'
         ];
+    }
+
+    /**
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function failedValidation(Validator $validator): void
+    {
+        throw new ValidationException(validator: $validator, response: response()->json(data: ['errors' => $validator->errors()], status: Response::HTTP_UNPROCESSABLE_ENTITY));
     }
 }

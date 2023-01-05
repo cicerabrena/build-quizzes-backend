@@ -2,8 +2,11 @@
 
 namespace App\Http\Requests\Api\Types;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class UpdateRequest extends FormRequest
 {
@@ -50,5 +53,13 @@ class UpdateRequest extends FormRequest
             'exists' => 'The type is not registered',
             'unique' => "The new name '{$name}' is already taken"
         ];
+    }
+
+    /**
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function failedValidation(Validator $validator): void
+    {
+        throw new ValidationException(validator: $validator, response: response()->json(data: ['errors' => $validator->errors()], status: Response::HTTP_UNPROCESSABLE_ENTITY));
     }
 }
