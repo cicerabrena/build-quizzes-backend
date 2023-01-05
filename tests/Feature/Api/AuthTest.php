@@ -18,7 +18,7 @@ class AuthTest extends TestCase
 
         User::factory()->create($userData);
 
-        $response = $this->postJson(route(name: 'api.login'), data: ['email' => $userData['email'], 'password' => 12345678]);
+        $response = $this->postJson(uri: route(name: 'api.login'), data: ['email' => $userData['email'], 'password' => 12345678]);
 
         $response->assertOk();
         $response->assertSee('token');
@@ -27,13 +27,10 @@ class AuthTest extends TestCase
 
     public function testUserCannotLoginInvalidEmail(): void
     {
-        $response = $this->postJson(route(name: 'api.login'), data: ['email' => 'invalid-email@test.com', 'password' => 12345678]);
+        $response = $this->postJson(uri: route(name: 'api.login'), data: ['email' => 'invalid-email@test.com', 'password' => 12345678]);
 
-        $jsonResponse = json_decode($response->content(), true);
-
-        $response->assertUnprocessable();
-
-        self::assertSame("The e-mail is not registered.", data_get($jsonResponse, 'message'));
+        $response->assertUnprocessable()
+                ->assertSeeText("The e-mail is not registered.");
     }
 
     public function testUserCannotLoginInvalidPassword(): void
@@ -42,13 +39,10 @@ class AuthTest extends TestCase
 
         User::factory()->create($userData);
 
-        $response = $this->postJson(route(name: 'api.login'), data: ['email' => $userData['email'], 'password' => 123456789]);
+        $response = $this->postJson(uri: route(name: 'api.login'), data: ['email' => $userData['email'], 'password' => 123456789]);
 
-        $jsonResponse = json_decode($response->content(), true);
-
-        $response->assertUnprocessable();
-
-        self::assertSame(ValidationError::PASSWORD_INCORRECT->value, data_get($jsonResponse, 'message'));
+        $response->assertUnprocessable()
+                ->assertSeeText(ValidationError::PASSWORD_INCORRECT->value);
     }
 
     public function testUserCanRevokeToken(): void
@@ -59,7 +53,7 @@ class AuthTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $response = $this->postJson(route(name: 'api.auth.revoke', parameters: $user->identification), data: ['token' => $user->getAttribute('token')]);
+        $response = $this->postJson(uri: route(name: 'api.auth.revoke', parameters: $user->identification), data: ['token' => $user->getAttribute('token')]);
 
         $response->assertNoContent();
     }
@@ -72,13 +66,10 @@ class AuthTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $response = $this->postJson(route(name: 'api.auth.revoke', parameters: $user->identification), data: ['token' => 'invalid-token']);
+        $response = $this->postJson(uri: route(name: 'api.auth.revoke', parameters: $user->identification), data: ['token' => 'invalid-token']);
 
-        $jsonResponse = json_decode($response->content(), true);
-
-        $response->assertUnprocessable();
-
-        self::assertSame(ValidationError::TOKEN_INVALID->value, data_get($jsonResponse, 'message'));
+        $response->assertUnprocessable()
+                ->assertSeeText(ValidationError::TOKEN_INVALID->value);
     }
 
     public function testInvalidUserCannotRevokeToken(): void
@@ -89,12 +80,9 @@ class AuthTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $response = $this->postJson(route(name: 'api.auth.revoke', parameters: 'invalid-token'), data: ['token' => $user->getAttribute('token')]);
+        $response = $this->postJson(uri: route(name: 'api.auth.revoke', parameters: 'invalid-token'), data: ['token' => $user->getAttribute('token')]);
 
-        $jsonResponse = json_decode($response->content(), true);
-
-        $response->assertNotFound();
-
-        self::assertSame(ValidationError::USER_NOT_REGISTERED->value, data_get($jsonResponse, 'message'));
+        $response->assertNotFound()
+                ->assertSeeText(ValidationError::USER_NOT_REGISTERED->value);
     }
 }

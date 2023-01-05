@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Requests\Api;
+namespace App\Http\Requests\Api\User;
 
 use App\Enums\Constants;
-use App\Enums\ValidationError;
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -34,7 +33,6 @@ class RegisterRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
-                'unique:users,email'
             ],
             'password' => [
                 'required',
@@ -52,7 +50,6 @@ class RegisterRequest extends FormRequest
             'name.min' => "The name must have at least " . Constants::MIN_LENGTH_NAME->value . " caracteres.",
             'email.required' => 'The e-mail is required.',
             'email.email' => 'The e-mail is not valid.',
-            'email.unique' => ValidationError::EMAIL_ALREADY_REGISTERED->value,
             'password.required' => 'The password is required.',
             'password.min' => "The password must have at least " . Constants::MIN_LENGTH_PASSWORD->value . " caracteres."
         ];
