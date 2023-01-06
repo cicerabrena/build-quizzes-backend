@@ -42,6 +42,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('{uuid}', App\Http\Controllers\Api\Types\UpdateController::class)->name('update');
         Route::delete('{uuid}', App\Http\Controllers\Api\Types\DestroyController::class)->name('destroy');
     });
+
+    Route::prefix('subjects')->as('subjects.')->group(function() {
+        Route::post('/', \App\Http\Controllers\Api\Subjects\StoreController::class)->name('store');
+    });
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

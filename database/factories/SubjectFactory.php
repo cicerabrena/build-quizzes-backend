@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use Illuminate\Support\Str;
+
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,7 @@ class SubjectFactory extends Factory
     public function definition()
     {
         $name = $this->faker->unique()->name();
-        $slug = str($name)->replace(" ", "-");
+        $slug = Str::slug($name, '-');
 
         return [
             'identification' => $this->faker->uuid(),
