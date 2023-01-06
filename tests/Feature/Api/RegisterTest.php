@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Api;
 
-use App\Enums\Constants;
+use App\Enums\ValidationNumbers;
 use App\Enums\ValidationError;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -37,7 +37,7 @@ class RegisterTest extends TestCase
         $response = $this->postJson(route(name: 'api.register'), data: $userData);
 
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-                ->assertSeeText("The name must have at least " . Constants::MIN_LENGTH_NAME->value . " caracteres.");
+                ->assertSeeText("The name must have at least " . ValidationNumbers::MIN_LENGTH_NAME->value . " caracteres.");
     }
 
     public function testCannotRegisterUserWithInvalidPassword(): void
@@ -47,7 +47,7 @@ class RegisterTest extends TestCase
         $response = $this->postJson(route(name: 'api.register'), data: $userData);
 
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-                ->assertSeeText("The password must have at least ". Constants::MIN_LENGTH_PASSWORD->value ." caracteres.");
+                ->assertSeeText("The password must have at least ". ValidationNumbers::MIN_LENGTH_PASSWORD->value ." caracteres.");
     }
 
     public function testCannotRegisterUserWithEmailRegistered(): void

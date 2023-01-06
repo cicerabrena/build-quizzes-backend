@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Api;
 
-use App\Enums\Constants;
+use App\Enums\ValidationNumbers;
 use App\Enums\ValidationError;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -121,7 +121,7 @@ class UsersTest extends TestCase
         $response = $this->putJson(uri: route(name: 'api.users.update', parameters: $userLogged->identification), data: $userData);
 
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-                ->assertSeeText("The name must have at least " . Constants::MIN_LENGTH_NAME->value . " caracteres.");
+                ->assertSeeText("The name must have at least " . ValidationNumbers::MIN_LENGTH_NAME->value . " caracteres.");
 
     }
 
@@ -136,7 +136,7 @@ class UsersTest extends TestCase
         $response = $this->putJson(uri: route(name: 'api.users.update', parameters: $userLogged->identification), data: $userData);
 
         $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY)
-                ->assertSeeText("The password must have at least ". Constants::MIN_LENGTH_PASSWORD->value ." caracteres.");
+                ->assertSeeText("The password must have at least ". ValidationNumbers::MIN_LENGTH_PASSWORD->value ." caracteres.");
     }
 
     public function testUserCannotUpdateAnotherUserWithEmailRegistered(): void

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Api;
 
-use App\Enums\Constants;
+use App\Enums\ValidationNumbers;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Response;
@@ -35,7 +35,7 @@ class LoginRequest extends FormRequest
             ],
             'password' => [
                 'required',
-                'min:' . Constants::MIN_LENGTH_PASSWORD->value
+                'min:' . ValidationNumbers::MIN_LENGTH_PASSWORD->value
             ]
         ];
     }
@@ -47,7 +47,7 @@ class LoginRequest extends FormRequest
             'email.email' => 'The e-mail is not valid.',
             'email.exists' => 'The e-mail is not registered.',
             'password.required' => 'The password is required.',
-            'password.min' => "The password must have at least " . Constants::MIN_LENGTH_PASSWORD->value . " caracteres."
+            'password.min' => "The password must have at least " . ValidationNumbers::MIN_LENGTH_PASSWORD->value . " caracteres."
         ];
     }
 
