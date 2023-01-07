@@ -11,9 +11,13 @@ final class CreateSubject
 {
     public static function handle(ValueObjectContract $object): Model
     {
-        $userId = Auth::user()->id;
+        $user = Auth::user();
 
-        $data = array_merge($object->toArray(), ['user_id' => $userId]);
+        $data = [];
+
+        if (isset($user)) {
+            $data = array_merge($object->toArray(), ['user_id' => $user->id]);
+        }
 
         return Subject::create(attributes: $data);
     }

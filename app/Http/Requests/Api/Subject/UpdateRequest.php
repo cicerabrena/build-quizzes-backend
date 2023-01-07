@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
 
-class StoreRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class StoreRequest extends FormRequest
      *
      * @return array<string, mixed>
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'name' => [
@@ -33,13 +33,11 @@ class StoreRequest extends FormRequest
                 'string',
                 'min:' . SubjectValidationNumbers::MIN_LENGTH_NAME->value,
                 'max:' . SubjectValidationNumbers::MAX_LENGTH_DESCRIPTION_NAME->value,
-                'unique:subjects,name'
             ],
 
             'slug' => [
                 'required',
                 'string',
-                'unique:subjects,slug',
                 'max:' . SubjectValidationNumbers::MAX_LENGTH_SLUG->value
             ],
 
@@ -69,6 +67,7 @@ class StoreRequest extends FormRequest
             'description.max' => "The description must have max " . SubjectValidationNumbers::MAX_LENGTH_DESCRIPTION_NAME->value . " caracteres."
         ];
     }
+
 
     /**
      * @throws \Illuminate\Validation\ValidationException

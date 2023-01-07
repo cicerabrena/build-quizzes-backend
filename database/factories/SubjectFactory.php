@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\SubjectValidationNumbers;
+use App\Models\User;
 use Illuminate\Support\Str;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -19,13 +21,17 @@ class SubjectFactory extends Factory
     public function definition()
     {
         $name = $this->faker->unique()->name();
-        $slug = Str::slug($name, '-');
+        $slug = Str::slug(title: $name, separator: '-');
+
+        $user = User::factory()->create();
 
         return [
             'identification' => $this->faker->uuid(),
+            'user_id' => $user->id,
             'name' => $name,
-            'slug' => $slug,
-            'created_at' => now()
+            'slug' => Str::limit(value: $slug, limit: SubjectValidationNumbers::MAX_LENGTH_SLUG->value, end: ''),
+            'description' => $this->faker->text(SubjectValidationNumbers::MAX_LENGTH_DESCRIPTION_NAME->value),
+            'created_at' => now(),
         ];
     }
 }
