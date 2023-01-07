@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Api\User;
 
-use App\Enums\Constants;
+use App\Enums\ValidationNumbers;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Response;
@@ -31,7 +31,7 @@ class UpdateRequest extends FormRequest
             'name' => [
                 'required',
                 'string',
-                'min:' . Constants::MIN_LENGTH_NAME->value
+                'min:' . ValidationNumbers::MIN_LENGTH_NAME->value
             ],
             'email' => [
                 'required',
@@ -39,7 +39,7 @@ class UpdateRequest extends FormRequest
             ],
             'password' => [
                 'required',
-                'min:' . Constants::MIN_LENGTH_PASSWORD->value
+                'min:' . ValidationNumbers::MIN_LENGTH_PASSWORD->value
             ]
 
         ];
@@ -50,11 +50,11 @@ class UpdateRequest extends FormRequest
         return [
             'name.required' => 'The name is required.',
             'name.string' => 'The name must have only ....',
-            'name.min' => "The name must have at least " . Constants::MIN_LENGTH_NAME->value . " caracteres.",
+            'name.min' => "The name must have at least " . ValidationNumbers::MIN_LENGTH_NAME->value . " caracteres.",
             'email.required' => 'The e-mail is required.',
             'email.email' => 'The e-mail is not valid.',
             'password.required' => 'The password is required.',
-            'password.min' => "The password must have at least " . Constants::MIN_LENGTH_PASSWORD->value . " caracteres."
+            'password.min' => "The password must have at least " . ValidationNumbers::MIN_LENGTH_PASSWORD->value . " caracteres."
         ];
     }
 

@@ -6,8 +6,15 @@ use App\Contracts\ValueObjectContract;
 
 final class ErrorValueObject implements ValueObjectContract
 {
+    private bool $hasKeys = true;
+
     public function __construct(public mixed $messages)
     {
+    }
+
+    public function setHasKeys(bool $value): void
+    {
+        $this->hasKeys = $value;
     }
 
     /**
@@ -39,10 +46,15 @@ final class ErrorValueObject implements ValueObjectContract
         /** @var array */
         $arrayMessages = (array) $this->messages;
 
-        if (array_is_list($arrayMessages)) {
-            return array_map(fn($message) => ['message' => $message], $arrayMessages);
+        if ($this->hasKeys) {
+            return $this->mountArrayWithKeys($arrayMessages);
         }
 
+        return array_map(fn($message) => ['message' => $message], $arrayMessages);
+    }
+
+    private function mountArrayWithKeys(array $arrayMessages): array
+    {
         $messages = [];
 
         $keys = array_keys($arrayMessages);

@@ -42,8 +42,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('{uuid}', App\Http\Controllers\Api\Types\UpdateController::class)->name('update');
         Route::delete('{uuid}', App\Http\Controllers\Api\Types\DestroyController::class)->name('destroy');
     });
-});
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    Route::prefix('subjects')->as('subjects.')->group(function() {
+        Route::post('/', \App\Http\Controllers\Api\Subjects\StoreController::class)->name('store');
+        Route::get('/', \App\Http\Controllers\Api\Subjects\IndexController::class)->name('index');
+        Route::get('/{uuid}', \App\Http\Controllers\Api\Subjects\ShowController::class)->name('show');
+        Route::put('/{uuid}', \App\Http\Controllers\Api\Subjects\UpdateController::class)->name('update');
+        Route::delete('/{uuid}', \App\Http\Controllers\Api\Subjects\DeleteController::class)->name('delete');
+    });
 });
