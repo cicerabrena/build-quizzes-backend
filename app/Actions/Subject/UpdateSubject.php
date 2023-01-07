@@ -15,15 +15,11 @@ final class UpdateSubject
     {
         $atrributes = $object->toArray();
 
-        $identification = strval(data_get($subject, 'identification'));
-        $name = strval(data_get($subject, 'name'));
-        $slug = strval(data_get($subject, 'slug'));
-
-        if (self::checkIfValueIsNotUnique($identification, 'name', $name)) {
+        if (self::checkIfValueIsNotUnique($subject->identification, 'name', $atrributes['name'])) {
             throw new NameRegisteredException(ValidationError::SUBJECT_NAME_ALREADY_REGISTERED->value);
         }
 
-        if (self::checkIfValueIsNotUnique($identification, 'slug', $slug)) {
+        if (self::checkIfValueIsNotUnique($subject->identification, 'slug', $atrributes['slug'])) {
             throw new SlugRegisteredException(ValidationError::SUBJECT_SLUG_ALREADY_REGISTERED->value);
         }
 

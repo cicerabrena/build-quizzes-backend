@@ -192,4 +192,29 @@ class SubjectTest extends TestCase
                 ->assertSeeText(ValidationError::SUBJECT_SLUG_ALREADY_REGISTERED->value);
     }
 
+    public function testUserCanDeleteASubject(): void
+    {
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+
+        $subject = Subject::factory()->create();
+
+        $response = $this->deleteJson(uri: route(name: 'api.subjects.delete', parameters: $subject->identification));
+
+        $response->assertNoContent();
+    }
+
+    public function testUserCannotDeleteASubjectWithInvalidUuid(): void
+    {
+        $user = User::factory()->create();
+
+        Sanctum::actingAs($user);
+
+        $response = $this->deleteJson(uri: route(name: 'api.subjects.delete', parameters: 'invalid-uuid'));
+
+        $response->assertNotFound()
+                ->assertSeeText(ValidationError::SUBJECT_NOT_VALID->value);
+    }
+
 }

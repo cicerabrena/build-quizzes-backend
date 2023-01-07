@@ -48,5 +48,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', \App\Http\Controllers\Api\Subjects\IndexController::class)->name('index');
         Route::get('/{uuid}', \App\Http\Controllers\Api\Subjects\ShowController::class)->name('show');
         Route::put('/{uuid}', \App\Http\Controllers\Api\Subjects\UpdateController::class)->name('update');
+        Route::delete('/{uuid}', \App\Http\Controllers\Api\Subjects\DeleteController::class)->name('delete');
     });
 });
