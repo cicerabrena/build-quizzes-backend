@@ -13,7 +13,7 @@ class IndexController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
-        $subjects = Subject::query()->get();
+        $subjects = Subject::query()->with('user')->get();
 
         return new JsonResponse(data: new SubjectCollection($subjects), status: Response::HTTP_OK);
     }

@@ -58,12 +58,16 @@ class SubjectTest extends TestCase
 
         $totalSubjects = 20;
 
-        Subject::factory($totalSubjects)->create();
+        Subject::factory($totalSubjects)->create(['user_id' => $user->id]);
 
         $response = $this->getJson(uri: route(name: 'api.subjects.index'));
 
         $response->assertOk()
                 ->assertJsonCount(count: $totalSubjects, key: 'data');
+
+        $jsonResponse = json_decode($response->content(), true);
+
+        self::assertSame($user->name, data_get($jsonResponse, 'data.0.creator'));
     }
 
     public function testUserCanSeeInfoOfASubject(): void
@@ -72,17 +76,23 @@ class SubjectTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $subject = Subject::factory()->create()->toArray();
+        $data = [
+            'name' => 'Subject',
+            'slug' => 'sj',
+            'description' => 'Description',
+            'user_id' => $user->id
+        ];
 
-        $response = $this->getJson(uri: route(name: 'api.subjects.show', parameters: data_get($subject, 'identification')));
+        $subject = Subject::factory()->create($data);
+
+        $response = $this->getJson(uri: route(name: 'api.subjects.show', parameters: $subject->identification));
+
+        unset($data['user_id']);
+
+        $data = array_merge($data, ['uuid' => $subject->identification, 'creator' => $user->name ]);
 
         $response->assertOk()
-                ->assertSimilarJson([
-                    'uuid' => data_get($subject, 'identification'),
-                    'name' => data_get($subject, 'name'),
-                    'slug' => data_get($subject, 'slug'),
-                    'description' => data_get($subject, 'description'),
-                ]);
+                ->assertSimilarJson($data);
     }
 
     public function testUserCannotSeeSubjectWithInvalidUuid(): void
@@ -103,7 +113,14 @@ class SubjectTest extends TestCase
 
         Sanctum::actingAs($user);
 
-        $subject = Subject::factory()->create();
+        $data = [
+            'name' => 'Subject',
+            'slug' => 'sj',
+            'description' => 'Description',
+            'user_id' => $user->id
+        ];
+
+        $subject = Subject::factory()->create($data);
 
         $newData = [
             'name' => 'Suject edited',
@@ -119,6 +136,7 @@ class SubjectTest extends TestCase
                     'name' => data_get($newData, 'name'),
                     'slug' => data_get($newData, 'slug'),
                     'description' => data_get($newData, 'description'),
+                    'creator' => $user->name
                 ]);
     }
 

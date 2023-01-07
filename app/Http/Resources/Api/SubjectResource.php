@@ -21,7 +21,8 @@ class SubjectResource extends JsonResource
             'uuid' => $subject->identification,
             'name' => $subject->name,
             'slug' => $subject->slug,
-            'description' => $subject->description
+            'description' => $subject->description,
+            'creator' => $subject->user ? $subject->user->name : null
         ];
     }
 }
